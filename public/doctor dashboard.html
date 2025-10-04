@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Dashboard</title>
+
+  <!-- Bootstrap + Tailwind -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f4f7f9;
+    }
+    .sidebar {
+      width: 260px;
+      background-color: #1a202c;
+      color: #e2e8f0;
+      position: fixed;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .nav-link {
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      border-radius: 6px;
+      margin: 4px 8px;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .nav-link:hover {
+      background: #2d3748;
+    }
+    .nav-link.active {
+      background: #3b82f6;
+      color: #fff;
+      font-weight: 600;
+    }
+    .main-content {
+      margin-left: 260px;
+      padding: 20px;
+    }
+    .card-shadow {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .call-btn {
+      background: #10b981;
+      border-radius: 9999px;
+    }
+    .call-btn:hover {
+      background: #059669;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="p-6 border-b border-gray-700 text-center">
+        <h3 class="text-xl font-bold text-white">Doctor Portal</h3>
+        <p class="text-gray-400 text-sm">Dr. Eleanor Vance</p>
+      </div>
+
+      <nav class="flex flex-col mt-4 flex-grow">
+        <a class="nav-link active" data-view="schedule">📅 Schedule</a>
+        <a class="nav-link" data-view="patients">👩‍⚕️ Patients</a>
+        <a class="nav-link" data-view="messages">💬 Messages</a>
+        <a class="nav-link" data-view="settings">⚙️ Settings</a>
+      </nav>
+
+      <div class="p-4 border-t border-gray-700 mt-auto">
+        <a id="logoutBtn" href="#" class="nav-link bg-red-700 text-white">
+          🚪 Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+      <div class="bg-white p-6 mb-8 rounded-lg card-shadow flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-800">Welcome back, Dr. Vance</h1>
+        <div class="flex gap-4">
+          <button class="px-4 py-2 call-btn text-white" id="startClinicBtn">Start Virtual Clinic</button>
+          <a href="Receptionist Registration Page.html" class="px-4 py-2 bg-blue-600 text-white rounded">
+            ➕ Add Receptionist
+          </a>
+                  </div>
+      </div>
+
+      <h2 class="text-xl font-semibold mb-4">Today's Patient Queue</h2>
+      <div class="bg-white p-6 rounded-lg card-shadow">
+        <p>Next Appointment: <b>Alice Smith</b> at <b>10:00 AM</b></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar navigation (dummy switching content)
+    document.querySelectorAll('.nav-link[data-view]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        const view = link.getAttribute('data-view');
+        const content = document.getElementById('main-content');
+
+        if (view === 'patients') {
+          content.innerHTML = `
+            <h2 class="text-2xl font-bold mb-4">My Patients</h2>
+            <div class="bg-white p-6 rounded-lg card-shadow">
+              <ul>
+                <li>Alice Smith (ID: 4501)</li>
+                <li>Robert Jones (ID: 4502)</li>
+                <li>Sarah Lee (ID: 4503)</li>
+              </ul>
+            </div>
+          `;
+        } else if (view === 'messages') {
+          content.innerHTML = `
+            <h2 class="text-2xl font-bold mb-4">Messages</h2>
+            <div class="bg-white p-6 rounded-lg card-shadow">
+              <p><b>Alice:</b> "Having chest discomfort..."</p>
+              <p><b>Robert:</b> "When are my lab results?"</p>
+            </div>
+          `;
+        } else if (view === 'settings') {
+          content.innerHTML = `
+            <h2 class="text-2xl font-bold mb-4">Settings</h2>
+            <div class="bg-white p-6 rounded-lg card-shadow">
+              <form>
+                <label class="block mb-2">Email</label>
+                <input type="email" value="eleanor.vance@clinic.com" class="w-full border p-2 mb-4 rounded">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+              </form>
+            </div>
+          `;
+        } else {
+          content.innerHTML = `
+            <div class="bg-white p-6 mb-8 rounded-lg card-shadow">
+              <h1 class="text-2xl font-bold text-gray-800">Welcome back, Dr. Vance</h1>
+              <p>Today's schedule overview...</p>
+            </div>
+          `;
+        }
+      });
+    });
+
+    // Logout button
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = "login.html";
+    });
+
+    // Add Receptionist button
+    document.getElementById("addReceptionistBtn").addEventListener("click", () => {
+      window.location.href = "receptionist-registration.html"; // redirect
+    });
+  </script>
+</body>
+</html>

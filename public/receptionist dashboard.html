@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Receptionist Dashboard</title>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f7f9;
+}
+.sidebar {
+    width: 260px;
+    background-color: #1a202c;
+    color: #e2e8f0;
+    position: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.nav-link {
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+    margin: 4px 8px;
+    transition: background 0.2s;
+    cursor: pointer;
+}
+.nav-link:hover {
+    background: #2d3748;
+}
+.nav-link.active {
+    background: #3b82f6;
+    color: #fff;
+    font-weight: 600;
+}
+.main-content {
+    margin-left: 260px;
+    padding: 20px;
+}
+.card-shadow {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+</style>
+</head>
+<body>
+
+<div class="flex h-screen">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="p-6 border-b border-gray-700 text-center">
+      <h3 class="text-xl font-bold text-white">Receptionist Portal</h3>
+    </div>
+
+    <nav class="flex flex-col mt-4 flex-grow">
+      <a class="nav-link active" data-view="requests">📅 Doctor Requests</a>
+      <a class="nav-link" data-view="schedule">🗂 Scheduled Appointments</a>
+    </nav>
+
+    <div class="p-4 border-t border-gray-700 mt-auto">
+      <a id="logoutBtn" href="login.html" class="nav-link bg-red-700 text-white">
+        🚪 Logout
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="main-content">
+    <div id="requests-view">
+      <h2 class="text-2xl font-bold mb-4">Pending Doctor Requests</h2>
+      <div class="bg-white p-6 rounded-lg card-shadow">
+        <table class="table-auto w-full text-left">
+          <thead>
+            <tr>
+              <th class="px-4 py-2">Patient</th>
+              <th class="px-4 py-2">Doctor</th>
+              <th class="px-4 py-2">Requested Time</th>
+              <th class="px-4 py-2">Action</th>
+            </tr>
+          </thead>
+          <tbody id="requestList"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="schedule-view" style="display:none;">
+      <h2 class="text-2xl font-bold mb-4">Schedule Appointment</h2>
+      <div class="bg-white p-6 rounded-lg card-shadow">
+        <form id="appointmentForm">
+          <input type="hidden" id="requestId">
+          <label class="block mb-2">Patient Name</label>
+          <input type="text" id="patientName" class="w-full p-2 mb-4 border rounded">
+
+          <label class="block mb-2">Doctor Name</label>
+          <input type="text" id="doctorName" class="w-full p-2 mb-4 border rounded">
+
+          <label class="block mb-2">Date & Time</label>
+          <input type="datetime-local" id="dateTime" class="w-full p-2 mb-4 border rounded">
+
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Schedule Appointment</button>
+        </form>
+        <div id="appointmentResult" class="mt-4 text-green-600 font-bold"></div>
+      </div>
+    </div>
+
+    <div id="schedule-list-view" style="display:none;">
+      <h2 class="text-2xl font-bold mb-4">Scheduled Appointments</h2>
+      <div class="bg-white p-6 rounded-lg card-shadow">
+        <table class="table-auto w-full text-left">
+          <thead>
+            <tr>
+              <th class="px-4 py-2">Patient</th>
+              <th class="px-4 py-2">Doctor</th>
+              <th class="px-4 py-2">Scheduled Time</th>
+            </tr>
+          </thead>
+          <tbody id="scheduleList"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let requests = [
+  { id: 1, patient_name: "Alice Smith", doctor_name: "Dr. John Doe", request_time: "2025-09-28T10:00" },
+  { id: 2, patient_name: "Robert Jones", doctor_name: "Dr. Mary Jane", request_time: "2025-09-28T11:30" }
+];
+
+let scheduled = [];
+
+function loadRequests() {
+  const tbody = document.getElementById("requestList");
+  tbody.innerHTML = "";
+
+  requests.forEach(req => {
+    tbody.innerHTML += `
+      <tr>
+        <td class="border px-4 py-2">${req.patient_name}</td>
+        <td class="border px-4 py-2">${req.doctor_name}</td>
+        <td class="border px-4 py-2">${new Date(req.request_time).toLocaleString()}</td>
+        <td class="border px-4 py-2">
+          <button onclick="acceptRequest(${req.id})" class="px-2 py-1 bg-green-600 text-white rounded">Accept</button>
+        </td>
+      </tr>`;
+  });
+}
+
+function acceptRequest(id) {
+  const req = requests.find(r => r.id === id);
+  document.getElementById("requests-view").style.display = "none";
+  document.getElementById("schedule-view").style.display = "block";
+
+  document.getElementById("requestId").value = id;
+  document.getElementById("patientName").value = req.patient_name;
+  document.getElementById("doctorName").value = req.doctor_name;
+  document.getElementById("dateTime").value = req.request_time;
+}
+
+document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const requestId = parseInt(document.getElementById('requestId').value);
+  const patientName = document.getElementById('patientName').value;
+  const doctorName = document.getElementById('doctorName').value;
+  const dateTime = document.getElementById('dateTime').value;
+
+  scheduled.push({ patient_name: patientName, doctor_name: doctorName, time: dateTime });
+
+  requests = requests.filter(r => r.id !== requestId);
+
+  document.getElementById('appointmentResult').innerText = "Appointment scheduled successfully!";
+
+  setTimeout(() => {
+    showScheduleList();
+  }, 1000);
+});
+
+function showScheduleList() {
+  document.getElementById("schedule-view").style.display = "none";
+  document.getElementById("requests-view").style.display = "none";
+  document.getElementById("schedule-list-view").style.display = "block";
+
+  const tbody = document.getElementById("scheduleList");
+  tbody.innerHTML = "";
+
+  scheduled.forEach(s => {
+    tbody.innerHTML += `
+      <tr>
+        <td class="border px-4 py-2">${s.patient_name}</td>
+        <td class="border px-4 py-2">${s.doctor_name}</td>
+        <td class="border px-4 py-2">${new Date(s.time).toLocaleString()}</td>
+      </tr>`;
+  });
+}
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', function() {
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+
+    document.getElementById("requests-view").style.display = "none";
+    document.getElementById("schedule-view").style.display = "none";
+    document.getElementById("schedule-list-view").style.display = "none";
+
+    if (this.getAttribute("data-view") === "requests") {
+      document.getElementById("requests-view").style.display = "block";
+      loadRequests();
+    } else if (this.getAttribute("data-view") === "schedule") {
+      showScheduleList();
+    }
+  });
+});
+
+loadRequests();
+</script>
+</body>
+</html>

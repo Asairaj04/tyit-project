@@ -1,0 +1,196 @@
+<!-- receptionist.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Receptionist Registration</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f5f0fa;
+    }
+    h2 {
+      color: #6f42c1;
+    }
+    .btn-primary {
+      background-color: #6f42c1;
+      border-color: #6f42c1;
+    }
+    .btn-primary:hover {
+      background-color: #5a32a3;
+      border-color: #5a32a3;
+    }
+    .form-label {
+      color: #4a1d96;
+    }
+  </style>
+</head>
+<body class="container mt-5">
+  <h2>Receptionist Registration</h2>
+  <form id="receptionistForm">
+    <div class="mb-3">
+      <label for="receptionistName" class="form-label">Name</label>
+      <input type="text" class="form-control" id="receptionistName" required
+             pattern="[A-Za-z\s]+" title="Name must contain only letters and spaces">
+    </div>
+    <div class="mb-3">
+      <label for="receptionistEmail" class="form-label">Email</label>
+      <input type="email" class="form-control" id="receptionistEmail" required>
+    </div>
+    <div class="mb-3">
+      <label for="receptionistPassword" class="form-label">Password</label>
+      <input type="password" class="form-control" id="receptionistPassword" required
+             pattern="^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$"
+             title="Password must be at least 8 characters and include a special character (!@#$%^&*)">
+    </div>
+    <div class="mb-3">
+      <label for="receptionistConfirmPassword" class="form-label">Confirm Password</label>
+      <input type="password" class="form-control" id="receptionistConfirmPassword" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+  </form>
+
+  <script>
+    const form = document.getElementById("receptionistForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("receptionistName").value;
+      const email = document.getElementById("receptionistEmail").value;
+      const password = document.getElementById("receptionistPassword").value;
+      const confirmPassword = document.getElementById("receptionistConfirmPassword").value;
+
+      if (/\d/.test(name)) {
+        alert("Name should not contain numbers.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:3000/register-receptionist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+        alert(data.message);
+        form.reset(); // Clear form after successful registration
+      } catch (error) {
+        console.error(error);
+        alert("Error registering receptionist");
+      }
+    });
+  </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Receptionist Registration</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f5f0fa;
+    }
+    h2 {
+      color: #6f42c1;
+    }
+    .btn-primary {
+      background-color: #6f42c1;
+      border-color: #6f42c1;
+    }
+    .btn-primary:hover {
+      background-color: #5a32a3;
+      border-color: #5a32a3;
+    }
+    .form-label {
+      color: #4a1d96;
+    }
+  </style>
+</head>
+<body class="container mt-5">
+  <h2>Receptionist Registration</h2>
+  <form id="receptionistForm">
+    <div class="mb-3">
+      <label for="receptionistName" class="form-label">Name</label>
+      <input type="text" class="form-control" id="receptionistName" required
+             pattern="[A-Za-z\s]+" title="Name must contain only letters and spaces">
+    </div>
+    <div class="mb-3">
+      <label for="receptionistEmail" class="form-label">Email</label>
+      <input type="email" class="form-control" id="receptionistEmail" required>
+    </div>
+    <div class="mb-3">
+      <label for="receptionistPassword" class="form-label">Password</label>
+      <input type="password" class="form-control" id="receptionistPassword" required
+             pattern="^(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$"
+             title="Password must be at least 8 characters and include a special character (!@#$%^&*)">
+    </div>
+    <div class="mb-3">
+      <label for="receptionistConfirmPassword" class="form-label">Confirm Password</label>
+      <input type="password" class="form-control" id="receptionistConfirmPassword" required>
+    </div>
+    <div class="form-check mb-3">
+      <input class="form-check-input" type="checkbox" id="togglePassword">
+      <label class="form-check-label" for="togglePassword">Show Password</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+  </form>
+
+  <script>
+    const form = document.getElementById("receptionistForm");
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("receptionistPassword");
+    const confirmPasswordField = document.getElementById("receptionistConfirmPassword");
+
+    togglePassword.addEventListener("change", () => {
+      const type = togglePassword.checked ? "text" : "password";
+      passwordField.type = type;
+      confirmPasswordField.type = type;
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("receptionistName").value;
+      const email = document.getElementById("receptionistEmail").value;
+      const password = passwordField.value;
+      const confirmPassword = confirmPasswordField.value;
+
+      if (/\d/.test(name)) {
+        alert("Name should not contain numbers.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:3000/register-receptionist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+        alert(data.message);
+        form.reset();
+      } catch (error) {
+        console.error(error);
+        alert("Error registering receptionist");
+      }
+    });
+  </script>
+</body>
+</html>
+
