@@ -1,0 +1,34 @@
+name: RiskAware Test Workflow
+
+on:
+  push:
+    branches:
+      - main
+      - "test-failure-*"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  basic-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check JavaScript syntax
+        run: node --check server.js
+
+      # This step fails ONLY on branches named test-failure-*
+      # It is intentionally included to test failure diagnosis.
+      - name: Intentional failure for diagnosis testing
+        if: startsWith(github.head_ref, 'test-failure-') || startsWith(github.ref, 'refs/heads/test-failure-')
+        run: |
+          echo "DIAGNOSTIC_TEST: intentional failure for RiskAware CI/CD testing"
+          exit 1
